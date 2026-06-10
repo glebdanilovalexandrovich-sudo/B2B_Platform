@@ -1,10 +1,28 @@
-B2B Platform - Web-site for making wholesale transactions.
-Do have high security, relialbe work , solves the problem with the high comission.
+OptPlatform — B2B Маркетплейс
 
-//
-Download-link
-//
+Бэкенд для B2B-платформы оптовых продаж.  
+Позволяет поставщикам управлять товарами, а покупателям — оформлять заказы.  
+Реализована JWT-авторизация с ролями (Admin, Supplier, Buyer).
 
-//
-Project structure 
-//
+Технологии
+- C# / .NET 8
+- ASP.NET Core Web API
+- Entity Framework Core (Code First, миграции)
+- SQL Server
+- JWT + BCrypt (авторизация)
+- Swagger (документация API)
+- Git / GitHub
+
+Основные возможности
+- Регистрация / логин (JWT-токен)
+- Роли: реализация ролей
+- CRUD для товаров и категорий
+- DTO (защита данных)
+- Хэширование паролей (BCrypt)
+
+Запуск проекта:
+git clone ...
+
+
+MIT
+
