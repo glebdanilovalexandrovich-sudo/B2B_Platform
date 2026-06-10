@@ -28,7 +28,8 @@ namespace ClassLibrary1
 
             public DbSet<Product> Products { get; set; }
             public DbSet<Category> Categories { get; set; }
-        }
+            public DbSet<User> Users { get; set; }
+    }
 
     public class ProductDto
     {
@@ -43,6 +44,28 @@ namespace ClassLibrary1
         public int Id { get; set; }
         public string Name { get; set; }
     }
+
+    public class User 
+    {
+        public int Id { get; set; }
+        public string Email { get; set; }
+        public string PasswordHash { get; set; }
+        public string Role { get; set; }
+    }
+
+    public class RegisterDTO 
+    {
+        public string Email { get; set; }
+        public string Password { get; set; }
+        public string Role { get; set; }
+    }
+
+    public class LoginDTO 
+    {
+        public string Email { get; set; }
+        public string Password { get; set; }
+    }
+
 }
 
 
