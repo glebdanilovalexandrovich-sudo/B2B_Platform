@@ -20,9 +20,12 @@ OptPlatform — B2B Маркетплейс
 - DTO (защита данных)
 - Хэширование паролей (BCrypt)
 
+
+Фото Swagger:
+<img width="1901" height="946" alt="image" src="https://github.com/user-attachments/assets/e886a9fc-ed62-4441-bbfd-1799ef9f71fa" />
+
 Запуск проекта:
 git clone ...
-
 
 MIT
 
