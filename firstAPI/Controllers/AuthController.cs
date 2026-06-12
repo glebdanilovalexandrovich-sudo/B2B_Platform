@@ -3,6 +3,7 @@ using System.Security.Claims;
 using System.Text;
 using BCrypt.Net;
 using ClassLibrary1;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -11,18 +12,51 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace firstAPI.Controllers
 {
+    
     [ApiController]
     [Route("api/[controller]")]
-    public class ProductsController : ControllerBase
+    public class AuthController : ControllerBase
     {
         private readonly AppDbContext _context;
         private readonly IConfiguration _configuration;
-        public ProductsController(AppDbContext context, IConfiguration configuration)
+        public AuthController(AppDbContext context, IConfiguration configuration)
         {
             _context = context;
             _configuration = configuration;
         }
 
+        
+        [HttpPost("registerAdmin")]
+        public async Task<IActionResult> CreateAdmin([FromBody] AdminDTO register) 
+        {
+            if (string.IsNullOrWhiteSpace(register.Email))
+                return BadRequest("Введите Email!");
+
+            if (string.IsNullOrWhiteSpace(register.Password) || register.Password.Length < 6)
+                return BadRequest("Пароль должен быть 6 или более символов!");
+
+            var checkAdmin = await _context.Users.FirstOrDefaultAsync(u => u.Email == register.Email);
+            if (checkAdmin != null) { return BadRequest("Пользовтель с таким логином уже существует!"); }
+
+            var passwordHash = BCrypt.Net.BCrypt.HashPassword(register.Password);
+
+            var admin = new User
+            {
+                Email = register.Email,
+                PasswordHash = passwordHash,
+                Role = "Admin"
+               
+            };
+
+            await _context.Users.AddAsync(admin);
+            await _context.SaveChangesAsync();
+
+            return Ok("Регистрация прошла успешно!");
+        }
+
+        
+
+        [AllowAnonymous]
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterDTO registerDTO) 
         {
@@ -34,8 +68,11 @@ namespace firstAPI.Controllers
             if (string.IsNullOrWhiteSpace(registerDTO.Password) || registerDTO.Password.Length < 6)
                 return BadRequest("Пароль должен быть 6 или более символов!");
 
-            if (registerDTO.Role != "Supplier" && registerDTO.Role != "Buyer" && registerDTO.Role != "Admin")
-                return BadRequest("Роль должна быть Supplier, Buyer или Admin");
+            if (registerDTO.Role != "Supplier" && registerDTO.Role != "Buyer")
+                return BadRequest("Роль должна быть Supplier, Buyer");
+
+            var checkUser = await _context.Users.FirstOrDefaultAsync(p => p.Email == registerDTO.Email);
+            if (checkUser != null) { return BadRequest("Пользователь с таким логином уже есть!"); }
 
             //Hash password
             string passwordHash = BCrypt.Net.BCrypt.HashPassword(registerDTO.Password);
@@ -53,6 +90,8 @@ namespace firstAPI.Controllers
 
             return Ok("Регистрация прошла успешно!");
         }
+
+        [AllowAnonymous]
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginDTO login)
         {

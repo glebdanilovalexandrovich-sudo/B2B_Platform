@@ -1,6 +1,8 @@
 ﻿using ClassLibrary1;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+
 
 [ApiController]
 [Route("api/[controller]")]
@@ -13,7 +15,8 @@ public class ProductsController : ControllerBase
         _context = context;
     }
 
-    //получить все товары
+    //to get all products
+    [Authorize]
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
@@ -32,6 +35,7 @@ public class ProductsController : ControllerBase
     }
 
     //удаление
+    [Authorize(Roles = "Supplier")]
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(int id)
     {
@@ -50,6 +54,7 @@ public class ProductsController : ControllerBase
         }
     }
 
+    [Authorize(Roles = "Supplier")]
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] Product product)
     {
@@ -78,6 +83,7 @@ public class ProductsController : ControllerBase
 
     }
 
+    [Authorize]
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById(int id)
     {
@@ -98,6 +104,7 @@ public class ProductsController : ControllerBase
         return Ok(ProductDTO);
     }
 
+    [Authorize(Roles = "Supplier")]
     [HttpPut("{id}")]
     public async Task<IActionResult> Update(int id, [FromBody] Product updatedProduct)
     {

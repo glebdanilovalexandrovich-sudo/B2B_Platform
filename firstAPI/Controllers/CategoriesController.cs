@@ -1,9 +1,11 @@
 ﻿using ClassLibrary1;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace firstAPI.Controllers
 {
+
     [ApiController]
     [Route("api/[controller]")]
     public class CategoriesController : ControllerBase
@@ -15,6 +17,7 @@ namespace firstAPI.Controllers
             _context = context;
         }
 
+        [Authorize]
         [HttpGet]
         public async Task<IActionResult> GetCategory()
         {
@@ -22,6 +25,7 @@ namespace firstAPI.Controllers
             return Ok(categories);
         }
 
+        [Authorize]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetIdCategory(int id)
         {
@@ -44,11 +48,18 @@ namespace firstAPI.Controllers
         }
 
         //create the category
+        [Authorize(Roles = "Admin")]
         [HttpPost]
-        public async Task<IActionResult> CreateCategory([FromBody] Category category)
+        public async Task<IActionResult> CreateCategory([FromBody] CategoryDTO categoryDto)  
         {
-            if (category.Name == null) {return  BadRequest("Неверное имя!"); }
-            
+            if (string.IsNullOrWhiteSpace(categoryDto.Name))
+                return BadRequest("Неверное имя!");
+
+            var category = new Category
+            {
+                Name = categoryDto.Name
+            };
+
             _context.Categories.Add(category);
             await _context.SaveChangesAsync();
 
@@ -56,19 +67,15 @@ namespace firstAPI.Controllers
             {
                 Id = category.Id,
                 Name = category.Name
-               
             };
 
-
-
             return CreatedAtAction(nameof(GetIdCategory), new { id = category.Id }, categoryDTO);
-
-
         }
 
         //Update category
+        [Authorize(Roles ="Admin")]
         [HttpPut ("{id}")]
-        public async Task<IActionResult> Update(int id, [FromBody] Category categoryUpd)
+        public async Task<IActionResult> Update(int id, [FromBody] CategoryDTO categoryUpd)
         {
             if (id <= 0) { return NotFound("Ошибка! Неверный Id"); }
 
@@ -92,6 +99,7 @@ namespace firstAPI.Controllers
         }
 
         //delete the category
+        [Authorize(Roles ="Admin")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id) 
         {
@@ -106,11 +114,6 @@ namespace firstAPI.Controllers
 
 
         }
-
-
-
-
-
-       
+ 
     }
 }

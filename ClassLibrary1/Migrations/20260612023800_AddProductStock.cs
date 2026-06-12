@@ -5,24 +5,25 @@
 namespace ClassLibrary1.Migrations
 {
     /// <inheritdoc />
-    public partial class RenamePasswordHash : Migration
+    public partial class AddProductStock : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.RenameColumn(
-                name: "HashPassword",
-                table: "Users",
-                newName: "PasswordHash");
+            migrationBuilder.AddColumn<int>(
+                name: "Stock",
+                table: "Products",
+                type: "int",
+                nullable: false,
+                defaultValue: 0);
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.RenameColumn(
-                name: "PasswordHash",
-                table: "Users",
-                newName: "HashPassword");
+            migrationBuilder.DropColumn(
+                name: "Stock",
+                table: "Products");
         }
     }
 }
