@@ -32,6 +32,5 @@ dotnet run
 Open Swagger: https://localhost:7091/swagger
 <img width="1898" height="980" alt="image" src="https://github.com/user-attachments/assets/07aaf915-a69a-44b4-af6e-590a5cfa4360" />
 <img width="1900" height="738" alt="image" src="https://github.com/user-attachments/assets/fc78e65b-17be-45ac-a4e7-186178965b08" />
-
-
+<img width="923" height="684" alt="image" src="https://github.com/user-attachments/assets/0bc63f52-5181-4e3a-8f22-eff8aa214dfc" />
 
