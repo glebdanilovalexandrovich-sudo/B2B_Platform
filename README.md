@@ -1,31 +1,32 @@
-OptPlatform — B2B Маркетплейс
+B2B MarketPlace API
 
-Бэкенд для B2B-платформы оптовых продаж.  
-Позволяет поставщикам управлять товарами, а покупателям — оформлять заказы.  
-Реализована JWT-авторизация с ролями (Admin, Supplier, Buyer).
+Backend for a B2B marketplace built with ASP.Net Core 8, Entity Framework Core, JWT and MS SQL Server.
 
-Технологии
+Technologies:
 - C# / .NET 8
 - ASP.NET Core Web API
-- Entity Framework Core (Code First, миграции)
-- SQL Server
-- JWT + BCrypt (авторизация)
-- Swagger (документация API)
+- Entity Framework Core (Code First, migrations, relations)
+- MS SQL Server
+- JWT + BCrypt
+- Swagger / OpenAPI
 - Git / GitHub
 
-Основные возможности
-- Регистрация / логин (JWT-токен)
-- Роли: реализация ролей
-- CRUD для товаров и категорий
-- DTO (защита данных)
-- Хэширование паролей (BCrypt)
+Features
+- JWT authentication with roles (Admin, Supplier, Buyer)
+- Products & categories CRUD
+- Deal creation with stock validation
+- DTOs to hide internal fields
+- Swagger documentation
 
+How to run locally:
 
-Фото Swagger:
-<img width="1901" height="946" alt="image" src="https://github.com/user-attachments/assets/e886a9fc-ed62-4441-bbfd-1799ef9f71fa" />
+git clone  https://github.com/glebdanilovalexandrovich-sudo/B2B_Platform
+cd B2B_Platform
 
-Запуск проекта:
-git clone ...
+Update connection string in appsettings.json
+Run migrations: dotnet ef database update
 
-MIT
+Run the project:
+dotnet run
 
+Open Swagger: https://localhost:5001/swagger
