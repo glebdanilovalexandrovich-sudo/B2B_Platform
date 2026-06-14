@@ -30,5 +30,8 @@ Run the project:
 dotnet run
 
 Open Swagger: https://localhost:7091/swagger
-[B2B.pdf](https://github.com/user-attachments/files/28927575/B2B.pdf)
+<img width="1898" height="980" alt="image" src="https://github.com/user-attachments/assets/07aaf915-a69a-44b4-af6e-590a5cfa4360" />
+<img width="1900" height="738" alt="image" src="https://github.com/user-attachments/assets/fc78e65b-17be-45ac-a4e7-186178965b08" />
+
+
 
