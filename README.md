@@ -29,4 +29,6 @@ Run migrations: dotnet ef database update
 Run the project:
 dotnet run
 
-Open Swagger: https://localhost:5001/swagger
+Open Swagger: https://localhost:7091/swagger
+[B2B.pdf](https://github.com/user-attachments/files/28927575/B2B.pdf)
+
