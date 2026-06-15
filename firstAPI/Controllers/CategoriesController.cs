@@ -1,4 +1,6 @@
-﻿using ClassLibrary1;
+﻿using OptPlatform.Domain;
+using OptPlatform.Application;
+using OptPlatform.Infrastructure;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;

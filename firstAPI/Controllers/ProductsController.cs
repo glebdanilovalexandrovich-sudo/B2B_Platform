@@ -1,8 +1,9 @@
-﻿using ClassLibrary1;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-
+using OptPlatform.Domain;
+using OptPlatform.Infrastructure;
+using OptPlatform.Application;
 
 [ApiController]
 [Route("api/[controller]")]
@@ -22,7 +23,7 @@ public class ProductsController : ControllerBase
     {
         var products = await _context.Products
             .Include(p => p.Category)
-            .Select(p => new ProductDto
+            .Select(p => new ProductDTO
             {
                 Id = p.Id,
                 Name = p.Name,
@@ -70,7 +71,7 @@ public class ProductsController : ControllerBase
         await _context.Entry(product).Reference(p => p.Category).LoadAsync();
         var category_name = product.Category.Name;
 
-        var ProductDTO = new ProductDto
+        var ProductDTO = new ProductDTO
         {
             Id = product.Id,
             Price = product.Price,
@@ -93,7 +94,7 @@ public class ProductsController : ControllerBase
 
         if (product == null) { return NotFound("Ошибка! Товар не найден!"); }
 
-        var ProductDTO = new ProductDto
+        var ProductDTO = new ProductDTO
         {
             Id = product.Id,
             Price = product.Price,
@@ -120,7 +121,7 @@ public class ProductsController : ControllerBase
         await _context.SaveChangesAsync();
         await _context.Entry(product).Reference(p => p.Category).LoadAsync();
 
-        var productDTO = new ProductDto
+        var productDTO = new ProductDTO
         {
             Id = product.Id,
             Price = product.Price,
@@ -130,11 +131,6 @@ public class ProductsController : ControllerBase
         return Ok(productDTO);
 
     }
-
-
-    
-
-
 
 
 }

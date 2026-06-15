@@ -1,8 +1,10 @@
 ﻿using System.Security.Claims;
-using ClassLibrary1;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using OptPlatform.Domain;
+using OptPlatform.Infrastructure;
+using OptPlatform.Application;
 
 namespace firstAPI.Controllers
 {

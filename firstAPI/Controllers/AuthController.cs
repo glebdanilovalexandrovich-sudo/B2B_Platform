@@ -2,12 +2,14 @@
 using System.Security.Claims;
 using System.Text;
 using BCrypt.Net;
-using ClassLibrary1;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using OptPlatform.Domain;
+using OptPlatform.Application;
+using OptPlatform.Infrastructure;
 
 
 namespace firstAPI.Controllers

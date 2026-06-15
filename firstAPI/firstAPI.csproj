@@ -18,7 +18,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ClassLibrary1\ClassLibrary1.csproj" />
+    <ProjectReference Include="..\OptPlatform.Domain\OptPlatform.Domain.csproj" />
+    <ProjectReference Include="..\OptPlatform.Application\OptPlatform.Application.csproj" />
+    <ProjectReference Include="..\OptPlatform.Infrastructure\OptPlatform.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

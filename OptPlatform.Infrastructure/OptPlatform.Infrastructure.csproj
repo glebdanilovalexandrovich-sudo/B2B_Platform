@@ -15,4 +15,8 @@
     </PackageReference>
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\OptPlatform.Domain\OptPlatform.Domain.csproj" />
+  </ItemGroup>
+
 </Project>

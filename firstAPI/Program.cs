@@ -1,11 +1,13 @@
 ﻿using System.Text;
-using ClassLibrary1;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Microsoft.AspNetCore.Http.Json;
 using System.Text.Json;
+using OptPlatform.Domain;
+using OptPlatform.Application;
+using OptPlatform.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
