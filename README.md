@@ -1,36 +1,64 @@
-B2B MarketPlace API
+B2B Marketplace API
 
-Backend for a B2B marketplace built with ASP.Net Core 8, Entity Framework Core, JWT and MS SQL Server.
+Backend for a B2B marketplace built with **ASP.NET Core 8**, **Entity Framework Core**, **JWT**, and **SQL Server**.
 
-Technologies:
+
+
+Technologies
+
 - C# / .NET 8
 - ASP.NET Core Web API
-- Entity Framework Core (Code First, migrations, relations)
+- Entity Framework Core (Code First, migrations, relationships)
 - MS SQL Server
 - JWT + BCrypt
 - Swagger / OpenAPI
+- REST API
 - Git / GitHub
 
+
+
 Features
-- JWT authentication with roles (Admin, Supplier, Buyer)
-- Products & categories CRUD
-- Deal creation with stock validation
-- DTOs to hide internal fields
+
+- JWT authentication with roles: `Admin`, `Supplier`, `Buyer`
+- Role-based access control (`[Authorize(Roles = "...")]`)
+- CRUD for products and categories
+- Deal management: create, confirm, reject, cancel
+- Stock validation and rollback on deal cancellation/rejection
+- Transactions with `RepeatableRead` isolation level
+- DTOs for secure data transfer
 - Swagger documentation
 
-How to run locally:
+---
 
-git clone  https://github.com/glebdanilovalexandrovich-sudo/B2B_Platform
-cd B2B_Platform
+Project Structure
 
-Update connection string in appsettings.json
-Run migrations: dotnet ef database update
+OptPlatform.sln
+├── OptPlatform.Domain // Entities (Product, User, Deal, etc.)
+├── OptPlatform.Application // DTOs
+├── OptPlatform.Infrastructure // DbContext, Migrations
+└── OptPlatform.Api // Controllers, Program.cs
 
-Run the project:
-dotnet run
+---
 
-Open Swagger: https://localhost:7091/swagger
-<img width="1898" height="980" alt="image" src="https://github.com/user-attachments/assets/07aaf915-a69a-44b4-af6e-590a5cfa4360" />
-<img width="1900" height="738" alt="image" src="https://github.com/user-attachments/assets/fc78e65b-17be-45ac-a4e7-186178965b08" />
-<img width="923" height="684" alt="image" src="https://github.com/user-attachments/assets/0bc63f52-5181-4e3a-8f22-eff8aa214dfc" />
+How install
+
+1. git clone https://github.com/glebdanilovalexandrovich-sudo/B2B_Platform.git
+   cd B2B_Platform
+2. Open
+3. In appsettings.json (inside OptPlatform.Api project), update:
+"ConnectionStrings": {
+    "DefaultConnection": "Server=HOME-PC\\SQLEXPRESS;Database=EF_Core_Tech_quest;Trusted_Connection=True;Encrypt=False;" (If you use a different SQL Server (e.g. localhost or (localdb)), change Server=...)
+}
+4. Install .NET 8 SDK
+5. Run in terminal / Package Manager Console: dotnet restore
+6. Apply migrations (create DB): dotnet ef database update --project OptPlatform.Infrastructure --startup-project OptPlatform.Api
+7. Run the project: dotnet run --project OptPlatform.Api
+8.Open Swagger: https://localhost:7091/swagger
+
+<img width="1893" height="948" alt="image" src="https://github.com/user-attachments/assets/e493c067-fd2d-4bfe-b910-8fe5e47a6cd4" />
+<img width="1897" height="821" alt="image" src="https://github.com/user-attachments/assets/1f6f18c3-229b-4061-83cb-f8df506c83b9" />
+<img width="802" height="671" alt="image" src="https://github.com/user-attachments/assets/97d634d8-093a-4202-aec0-cfb0c32e1572" />
+
+
+
 
