@@ -94,6 +94,14 @@ namespace firstAPI.Controllers
 
         }
 
+        [HttpGet("stat")]
+        public async Task<IActionResult> UserStat() 
+        {
+
+            var userCount = await _context.Users.CountAsync();
+            return Ok($"Пользователей: {userCount}");
+                
+        }
 
 
 
