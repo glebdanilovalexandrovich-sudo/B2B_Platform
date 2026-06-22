@@ -14,6 +14,7 @@ Technologies
 - Swagger / OpenAPI
 - REST API
 - Git / GitHub
+- Docker
 
 
 
@@ -27,6 +28,7 @@ Features
 - Transactions with `RepeatableRead` isolation level
 - DTOs for secure data transfer
 - Swagger documentation
+- Docker support
 
 ---
 
@@ -42,6 +44,15 @@ OptPlatform.sln
 
 How install
 
+Run with Docker (recommended):
+git clone https://github.com/glebdanilovalexandrovich-sudo/B2B_Platform.git
+cd B2B_Platform
+docker-compose up -d --build
+Swagger: https://localhost:7091/swagger
+Stop containers:
+docker-compose down
+
+Nothing docker:
 1. git clone https://github.com/glebdanilovalexandrovich-sudo/B2B_Platform.git
    cd B2B_Platform
 2. Open
