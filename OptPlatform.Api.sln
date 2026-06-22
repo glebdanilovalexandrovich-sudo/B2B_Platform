@@ -3,13 +3,20 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.14.36518.9
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "firstAPI", "firstAPI\firstAPI.csproj", "{84D4BB30-1AFA-4F6E-9F9D-C5BBCF4CBCD2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OptPlatform.Api", "OptPlatform.Api\OptPlatform.Api.csproj", "{84D4BB30-1AFA-4F6E-9F9D-C5BBCF4CBCD2}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OptPlatform.Domain", "OptPlatform.Domain\OptPlatform.Domain.csproj", "{5A43C8C7-B021-4D1B-8972-D63D83BCD47C}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OptPlatform.Infrastructure", "OptPlatform.Infrastructure\OptPlatform.Infrastructure.csproj", "{DE268EF9-CD7E-490D-B836-27116FB53FB8}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OptPlatform.Application", "OptPlatform.Application\OptPlatform.Application.csproj", "{6B41CAA7-F9E4-4639-8C9F-4132E5BFDC79}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Элементы решения", "Элементы решения", "{754FC069-D67B-A9D7-50A1-8D1CA196D8F1}"
+	ProjectSection(SolutionItems) = preProject
+		.dockerignore = .dockerignore
+		docker-compose.yml = docker-compose.yml
+		firstAPI\Dockerfile = firstAPI\Dockerfile
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
