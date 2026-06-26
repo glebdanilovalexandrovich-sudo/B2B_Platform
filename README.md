@@ -15,6 +15,7 @@ Technologies
 - REST API
 - Git / GitHub
 - Docker
+- Middleware
 
 
 
@@ -29,6 +30,7 @@ Features
 - DTOs for secure data transfer
 - Swagger documentation
 - Docker support
+- Middleware for checking errors
 
 ---
 
