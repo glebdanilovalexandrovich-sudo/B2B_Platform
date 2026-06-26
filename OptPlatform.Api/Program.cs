@@ -8,6 +8,7 @@ using System.Text.Json;
 using OptPlatform.Domain;
 using OptPlatform.Application;
 using OptPlatform.Infrastructure;
+using OptPlatform.Api.Middlewares;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -78,6 +79,10 @@ builder.Services.Configure<JsonOptions>(options =>
 });
 
 var app = builder.Build();
+
+app.UseMiddleware<RequestLoggingMiddleware>();
+app.UseMiddleware<ErrorHandlingMiddleware>();
+//second
 
 if (app.Environment.IsDevelopment())
 {

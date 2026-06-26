@@ -18,6 +18,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Элементы решен
 		firstAPI\Dockerfile = firstAPI\Dockerfile
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OptPlatform.Tests", "OptPlatform.Tests\OptPlatform.Tests.csproj", "{2E45EC05-B04A-4D12-83DF-EBA7DBD0E436}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -40,6 +42,10 @@ Global
 		{6B41CAA7-F9E4-4639-8C9F-4132E5BFDC79}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6B41CAA7-F9E4-4639-8C9F-4132E5BFDC79}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6B41CAA7-F9E4-4639-8C9F-4132E5BFDC79}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2E45EC05-B04A-4D12-83DF-EBA7DBD0E436}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2E45EC05-B04A-4D12-83DF-EBA7DBD0E436}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2E45EC05-B04A-4D12-83DF-EBA7DBD0E436}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2E45EC05-B04A-4D12-83DF-EBA7DBD0E436}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

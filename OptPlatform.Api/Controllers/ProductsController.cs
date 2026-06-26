@@ -19,10 +19,27 @@ public class ProductsController : ControllerBase
     //to get all products
     [Authorize]
     [HttpGet]
-    public async Task<IActionResult> GetAll()
+    public async Task<IActionResult> GetAll(
+    int page = 1,
+    int pageSize = 10,
+    int? categoryId = null,
+    string? search = null)
     {
-        var products = await _context.Products
+        var query = _context.Products
             .Include(p => p.Category)
+            .AsQueryable();
+
+        if (categoryId.HasValue)
+            query = query.Where(p => p.CategoryId == categoryId.Value);
+
+        if (!string.IsNullOrWhiteSpace(search))
+            query = query.Where(p => p.Name.Contains(search));
+
+        var total = await query.CountAsync();
+
+        var items = await query
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
             .Select(p => new ProductDTO
             {
                 Id = p.Id,
@@ -32,7 +49,14 @@ public class ProductsController : ControllerBase
             })
             .ToListAsync();
 
-        return Ok(products);
+        return Ok(new
+        {
+            page,
+            pageSize,
+            total,
+            totalPages = (int)Math.Ceiling(total / (double)pageSize),
+            items
+        });
     }
 
     //удаление
