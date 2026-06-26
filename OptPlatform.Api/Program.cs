@@ -82,7 +82,7 @@ var app = builder.Build();
 
 app.UseMiddleware<RequestLoggingMiddleware>();
 app.UseMiddleware<ErrorHandlingMiddleware>();
-//second
+
 
 if (app.Environment.IsDevelopment())
 {
