@@ -9,8 +9,15 @@ using OptPlatform.Domain;
 using OptPlatform.Application;
 using OptPlatform.Infrastructure;
 using OptPlatform.Api.Middlewares;
+using Serilog;
+//serilog
+Log.Logger = new LoggerConfiguration()
+    .WriteTo.Console()
+    .WriteTo.File("logs/log-.txt", rollingInterval: RollingInterval.Day)
+    .CreateLogger();
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Host.UseSerilog();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -79,7 +86,7 @@ builder.Services.Configure<JsonOptions>(options =>
 });
 
 var app = builder.Build();
-
+//middleware
 app.UseMiddleware<RequestLoggingMiddleware>();
 app.UseMiddleware<ErrorHandlingMiddleware>();
 
@@ -97,4 +104,11 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-app.Run();
+try
+{
+    app.Run();
+}
+finally
+{
+    Log.CloseAndFlush();
+}

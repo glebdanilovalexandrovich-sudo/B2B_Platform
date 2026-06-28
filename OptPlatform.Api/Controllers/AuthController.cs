@@ -10,6 +10,8 @@ using Microsoft.IdentityModel.Tokens;
 using OptPlatform.Domain;
 using OptPlatform.Application;
 using OptPlatform.Infrastructure;
+using Microsoft.Extensions.Logging;
+using Microsoft.EntityFrameworkCore.Storage;
 
 
 namespace firstAPI.Controllers
@@ -21,24 +23,36 @@ namespace firstAPI.Controllers
     {
         private readonly AppDbContext _context;
         private readonly IConfiguration _configuration;
-        public AuthController(AppDbContext context, IConfiguration configuration)
+        private readonly ILogger<AuthController> _logger;
+        public AuthController(AppDbContext context, IConfiguration configuration, ILogger<AuthController> logger)
         {
             _context = context;
             _configuration = configuration;
+            _logger = logger;
         }
 
-        
+
         [HttpPost("registerAdmin")]
         public async Task<IActionResult> CreateAdmin([FromBody] AdminDTO register) 
         {
             if (string.IsNullOrWhiteSpace(register.Email))
-                return BadRequest("Введите Email!");
+            {
+                _logger.LogWarning("Регистрация отклонена, неверный Email.");
+                return BadRequest("Введите Email!"); 
+            }
 
             if (string.IsNullOrWhiteSpace(register.Password) || register.Password.Length < 6)
-                return BadRequest("Пароль должен быть 6 или более символов!");
+            {
+                _logger.LogWarning("Регистрация отклонена, неверный пароль.");
+                return BadRequest("Пароль должен быть 6 или более символов!"); 
+            }
 
             var checkAdmin = await _context.Users.FirstOrDefaultAsync(u => u.Email == register.Email);
-            if (checkAdmin != null) { return BadRequest("Пользовтель с таким логином уже существует!"); }
+            if (checkAdmin != null) 
+            {
+                _logger.LogWarning("Регистрация отклонена, логин занят.");
+                return BadRequest("Пользовтель с таким логином уже существует!"); 
+            }
 
             var passwordHash = BCrypt.Net.BCrypt.HashPassword(register.Password);
 
@@ -53,6 +67,7 @@ namespace firstAPI.Controllers
             await _context.Users.AddAsync(admin);
             await _context.SaveChangesAsync();
 
+            _logger.LogInformation("Регистрация {Email} прошла успешно.", register.Email);
             return Ok("Регистрация прошла успешно!");
         }
 
@@ -62,19 +77,33 @@ namespace firstAPI.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterDTO registerDTO) 
         {
+            _logger.LogInformation("Начало регистрации пользователя.");
 
             //check parameters
             if (string.IsNullOrWhiteSpace(registerDTO.Email))
-                return BadRequest("Введите Email!");
+            {
+                _logger.LogWarning("Регистрация отклонена, пустой email.");
+                return BadRequest("Введите Email!"); 
+            }
 
             if (string.IsNullOrWhiteSpace(registerDTO.Password) || registerDTO.Password.Length < 6)
+            {
+                _logger.LogWarning("Регистрация отклонена, неправильный пароль.");
                 return BadRequest("Пароль должен быть 6 или более символов!");
+            }
 
             if (registerDTO.Role != "Supplier" && registerDTO.Role != "Buyer")
+            {
+                _logger.LogWarning("Регистрация отклонена, неверная роль.");
                 return BadRequest("Роль должна быть Supplier, Buyer");
+            }
 
             var checkUser = await _context.Users.FirstOrDefaultAsync(p => p.Email == registerDTO.Email);
-            if (checkUser != null) { return BadRequest("Пользователь с таким логином уже есть!"); }
+            if (checkUser != null) 
+            {
+                _logger.LogWarning("Регистрация отклонена, логин занят.");
+                return BadRequest("Пользователь с таким логином уже есть!");
+            }
 
             //Hash password
             string passwordHash = BCrypt.Net.BCrypt.HashPassword(registerDTO.Password);
@@ -90,6 +119,7 @@ namespace firstAPI.Controllers
             await _context.Users.AddAsync(user);
             await _context.SaveChangesAsync();
 
+            _logger.LogInformation("Регистрация {Email} прошла успешна", registerDTO.Email);
             return Ok("Регистрация прошла успешно!");
         }
 
@@ -101,19 +131,29 @@ namespace firstAPI.Controllers
             //check
             if (string.IsNullOrWhiteSpace(login.Email)) 
             {
+                _logger.LogWarning("Авторизация отклонена, неверный Email.");
                 return BadRequest("Неверный Email!");
             }
-            if (string.IsNullOrWhiteSpace(login.Password)) { return BadRequest("Введите пароль!"); }
+            if (string.IsNullOrWhiteSpace(login.Password)) 
+            {
+                _logger.LogWarning("Авторизация отклонена, неверный пароль.");
+                return BadRequest("Введите пароль!"); 
+            }
 
             //take user from DB
             var user = await _context.Users.FirstOrDefaultAsync(p=> p.Email == login.Email);
 
-            if (user == null) { return Unauthorized("Пользователь не найден!"); }
+            if (user == null) 
+            {
+                _logger.LogWarning("Авторизация отклонена, пользователь не найден.");
+                return Unauthorized("Пользователь не найден!"); 
+            }
 
             //take user password from user
             var passwordCheck = BCrypt.Net.BCrypt.Verify(login.Password, user.PasswordHash);
             if (passwordCheck != true) 
             {
+                _logger.LogWarning("Авторизация отклонена, неверный пароль.");
                 return Unauthorized();
             }
 
