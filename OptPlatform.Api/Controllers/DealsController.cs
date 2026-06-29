@@ -7,6 +7,7 @@ using OptPlatform.Infrastructure;
 using OptPlatform.Application;
 using Microsoft.EntityFrameworkCore;
 using System.Data;
+using Microsoft.Extensions.Logging;
 
 namespace firstAPI.Controllers
 {
@@ -15,14 +16,15 @@ namespace firstAPI.Controllers
     public class DealsController : ControllerBase
     {
         private readonly AppDbContext _context;
+        private readonly ILogger<DealsController> _logger;
 
-        public DealsController(AppDbContext context)
+        public DealsController(AppDbContext context, ILogger<DealsController> logger)
         {
             _context = context;
+            _logger = logger;
         }
 
         //create deal
-
         [Authorize(Roles = "Buyer")]
         [HttpPost]
         public async Task<IActionResult> CreateDeal([FromBody] CreateDealDto dto)
@@ -41,15 +43,24 @@ namespace firstAPI.Controllers
                 {
                     var product = await _context.Products.FindAsync(item.ProductId);
                     if (product == null)
-                        return BadRequest($"Товар {item.ProductId} не найден");
+                    {
+                        _logger.LogWarning("Создание сделки отклонено, товар не найден.");
+                        return BadRequest($"Товар {item.ProductId} не найден"); 
+                    }
 
                     if (product.Stock < item.Quantity)
+                    {
+                        _logger.LogWarning("Создание сделки отклонено, недостаточно товара.");
                         return BadRequest($"Недостаточно товара {product.Name}");
+                    }
 
                     if (supplierId == null)
                         supplierId = product.SupplierId;
                     else if (supplierId != product.SupplierId)
-                        return BadRequest("Все товары должны быть от одного поставщика");
+                    {
+                        _logger.LogWarning("Создание сделки отклонено, неверный поставщик.");
+                        return BadRequest("Все товары должны быть от одного поставщика"); 
+                    }
 
                     totalAmount += product.Price * item.Quantity;
 
@@ -77,12 +88,14 @@ namespace firstAPI.Controllers
                 await _context.SaveChangesAsync();
                 await transaction.CommitAsync();
 
+                _logger.LogInformation("Создание сделки успешно.");
                 return Ok(deal);
             }
 
             catch
             {
                 await transaction.RollbackAsync();
+                _logger.LogError("Ошибка при создании сделки.");
                 return StatusCode(500, "Ошибка при создании сделки!");
             }
 
@@ -120,16 +133,25 @@ namespace firstAPI.Controllers
         {
             var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value); //get user id from jwt-token
 
-            if (id <= 0) { return BadRequest("Неверный Id!"); }
+            if (id <= 0) 
+            {
+                _logger.LogWarning("Подтверждение сделки отклонено, неверный Id.");
+                return BadRequest("Неверный Id!"); 
+            }
 
             var deal = await _context.Deals.FindAsync(id); //find deal in DB
-            if (deal == null) { return NotFound("Сделка не найдена!"); }
+            if (deal == null) 
+            {
+                _logger.LogWarning("Подтверждение сделки отклонено, сделка не найдена.");
+                return NotFound("Сделка не найдена!");
+            }
 
             if (deal.SupplierId != userId) { return Forbid(); } //check user its supplier?
 
             deal.Status = "Confirmed";
             await _context.SaveChangesAsync();
 
+            _logger.LogInformation("Подтверждение сделки успешно.");
             return Ok(deal);
         }
 
@@ -139,17 +161,29 @@ namespace firstAPI.Controllers
         {
             var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
 
-            if (id <= 0) { return BadRequest("Неверный id!"); }
+            if (id <= 0) 
+            {
+                _logger.LogWarning("Отклонение сделки отменено, неверный Id.");
+                return BadRequest("Неверный id!"); 
+            }
 
 
             using var transaction = await _context.Database.BeginTransactionAsync(IsolationLevel.RepeatableRead); //isolation deal 
             try
             {
                 var deal = await _context.Deals.FindAsync(id);
-                if (deal == null) { return NotFound("Сдела не найдена!"); }
+                if (deal == null) 
+                {
+                    _logger.LogWarning("Отклонение сделки отменено, сделка не найдена.");
+                    return NotFound("Сделка не найдена!"); 
+                }
                 if (deal.SupplierId != userId) { return Forbid(); } //check our deal or not
 
-                if (deal.Status != "Pending") { return BadRequest("Отмена сделки невозможна!"); }
+                if (deal.Status != "Pending") 
+                {
+                    _logger.LogWarning("Отклонение сделки отменено, неверный статус.");
+                    return BadRequest("Отмена сделки невозможна!"); 
+                }
 
                 var dealItems = await _context.DealItems
                      .Where(di => di.DealId == deal.Id)
@@ -166,11 +200,13 @@ namespace firstAPI.Controllers
                 await _context.SaveChangesAsync();
                 await transaction.CommitAsync();
 
+                _logger.LogInformation("Отклонение сделки успешно.");
                 return Ok(new { deal.Id, deal.Status });
             }
 
             catch
             {
+                _logger.LogError("Ошибка при отклонении сделки.");
                 return StatusCode(500, "Ошибка при отклонении сделки!");
             }
         }
@@ -183,14 +219,24 @@ namespace firstAPI.Controllers
            
             using var transaction = await _context.Database.BeginTransactionAsync(IsolationLevel.RepeatableRead);
 
-            
-
             try 
             {
                 var deal = await _context.Deals.FindAsync(id);
-                if (deal == null) { return NotFound("Сделка не найдена!"); }
-                if (deal.BuyerId != userId) { return Forbid(); }
-                if (deal.Status != "Pending") { return BadRequest("Вы не участник сделки!"); }
+                if (deal == null) 
+                {
+                    _logger.LogWarning("Отмена сделки отклонена, сделка не найдена.");
+                    return NotFound("Сделка не найдена!"); 
+                }
+                if (deal.BuyerId != userId) 
+                {
+                    _logger.LogWarning("Отмена сделки отклонена, неправильный пользователь.");
+                    return Forbid(); 
+                }
+                if (deal.Status != "Pending") 
+                {
+                    _logger.LogWarning("Отмена сделки отклонена, неверный статус сделки.");
+                    return BadRequest("Отменить сделку нельзя!");
+                }
 
                 var dealItems = await _context.DealItems
                     .Where(p => p.DealId == deal.Id)
@@ -203,12 +249,15 @@ namespace firstAPI.Controllers
                 }
                 await _context.SaveChangesAsync();
                 await transaction.CommitAsync();
+
+                _logger.LogInformation("Отмена сделки успешна.");
                 return Ok(new {deal.Id, deal.Status });
             }
 
             catch 
             { 
                 await transaction.RollbackAsync();
+                _logger.LogError("Ошибка при отмене сделки!");
                 return StatusCode(500, "Ошибка при отмене сделки!");
             }
         }

@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using OptPlatform.Application;
 using OptPlatform.Domain;
 using OptPlatform.Infrastructure;
+using Microsoft.Extensions.Logging;
 
 namespace firstAPI.Controllers
 {
@@ -14,10 +15,12 @@ namespace firstAPI.Controllers
     public class AdminController : ControllerBase
     {
         private readonly AppDbContext _context;
+        private readonly ILogger<AdminController> _logger;
 
-        public AdminController(AppDbContext context)
+        public AdminController(AppDbContext context, ILogger<AdminController> logger)
         {
             _context = context;
+            _logger = logger;
         }
 
 
@@ -58,14 +61,25 @@ namespace firstAPI.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> ChangeRole(int id, [FromBody] UpdateRoleDTO dto)
         {
-            if (id <= 0) return BadRequest("Неверный Id!");
+            if (id <= 0)
+            {
+                _logger.LogWarning("Редактирование роли отклонено, неверный Id.");
+                return BadRequest("Неверный Id!");
+            }
 
             var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == id);
-            if (user == null) return NotFound("Пользователь не найден!");
+            if (user == null)
+            {
+                _logger.LogWarning("Редактирование роли отклонено, пользователь {id} не найден.", id);
+                return NotFound("Пользователь не найден!");
+            }
 
             // Проверка, что новая роль допустима
             if (dto.Role != "Admin" && dto.Role != "Supplier" && dto.Role != "Buyer")
-                return BadRequest("Роль должна быть: Admin, Supplier или Buyer");
+            {
+                _logger.LogWarning("Редактирование роли отклонено, неверная роль.");
+                return BadRequest("Роль должна быть: Admin, Supplier или Buyer"); 
+            }
 
             user.Role = dto.Role;
             await _context.SaveChangesAsync();
@@ -77,19 +91,30 @@ namespace firstAPI.Controllers
                 Role = user.Role
             };
 
+            _logger.LogInformation("Редактирование роли пользователя {id} успешно.", id);
             return Ok(userDto);
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteUser(int id) 
         {
-            if (id <= 0) return BadRequest("Неверный Id!");
+            if (id <= 0) 
+            {
+                _logger.LogWarning("Удаление пользователя {id} отклонено, неверный id.", id);
+                return BadRequest("Неверный Id!"); 
+            }
 
             var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == id);
-            if (user == null) return NotFound("Пользователь не найден!");
+            if (user == null)
+            {
+                _logger.LogWarning("Удаление пользователя {id} отклонено, пользователь не найден.", id);
+                return NotFound("Пользователь не найден!");
+            }
 
             _context.Users.Remove(user);
             await _context.SaveChangesAsync();
+
+            _logger.LogInformation("Удаление пользователя {id} успешно.", id);
             return Ok("Пользователь удалён!");
 
         }
@@ -97,9 +122,9 @@ namespace firstAPI.Controllers
         [HttpGet("stat")]
         public async Task<IActionResult> UserStat() 
         {
-
+            _logger.LogInformation("Запрос статистики пользователей");
             var userCount = await _context.Users.CountAsync();
-            return Ok($"Пользователей: {userCount}");
+            return Ok(new { totalUsers = userCount });
                 
         }
 

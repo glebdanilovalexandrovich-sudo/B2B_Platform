@@ -4,6 +4,7 @@ using OptPlatform.Infrastructure;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace firstAPI.Controllers
 {
@@ -13,10 +14,12 @@ namespace firstAPI.Controllers
     public class CategoriesController : ControllerBase
     {
         private readonly AppDbContext _context;
+        private readonly ILogger<CategoriesController> _logger;
 
-        public CategoriesController(AppDbContext context)
+        public CategoriesController(AppDbContext context, ILogger<CategoriesController> logger)
         {
             _context = context;
+            _logger = logger;
         }
 
         [Authorize]
@@ -32,8 +35,9 @@ namespace firstAPI.Controllers
         public async Task<IActionResult> GetIdCategory(int id)
         {
             if (id <= 0)
+            {
                 return BadRequest("Неверный Id");
-
+            }
             var category = await _context.Categories.FindAsync(id);
 
             if (category == null)
@@ -55,7 +59,10 @@ namespace firstAPI.Controllers
         public async Task<IActionResult> CreateCategory([FromBody] CategoryDTO categoryDto)  
         {
             if (string.IsNullOrWhiteSpace(categoryDto.Name))
-                return BadRequest("Неверное имя!");
+            {
+                _logger.LogWarning("Создание категории отменено, неверное имя.");
+                return BadRequest("Неверное имя!"); 
+            }
 
             var category = new Category
             {
@@ -71,6 +78,7 @@ namespace firstAPI.Controllers
                 Name = category.Name
             };
 
+            _logger.LogInformation("Создание категории {Name} успешно.", categoryDTO.Name);
             return CreatedAtAction(nameof(GetIdCategory), new { id = category.Id }, categoryDTO);
         }
 
@@ -79,10 +87,18 @@ namespace firstAPI.Controllers
         [HttpPut ("{id}")]
         public async Task<IActionResult> Update(int id, [FromBody] CategoryDTO categoryUpd)
         {
-            if (id <= 0) { return NotFound("Ошибка! Неверный Id"); }
+            if (id <= 0) 
+            {
+                _logger.LogWarning("Изменение категории отменено, неверный Id.");
+                return NotFound("Ошибка! Неверный Id");
+            }
 
             var category = await _context.Categories.FindAsync(id);
-            if (category == null) { return NotFound("категория не найдена!"); }
+            if (category == null) 
+            {
+                _logger.LogWarning("Изменение категории отменено, категория не найдена.");
+                return NotFound("категория не найдена!"); 
+            }
 
             category.Name = categoryUpd.Name;
             await _context.SaveChangesAsync();
@@ -94,6 +110,7 @@ namespace firstAPI.Controllers
                 
             };
 
+            _logger.LogInformation("Изменение категории {Name} успешно.", categoryDTO.Name);
             return Ok(categoryDTO);
 
 
@@ -105,13 +122,22 @@ namespace firstAPI.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id) 
         {
-            if (id <= 0) { return NotFound("Не найдено по Id"); }
+            if (id <= 0) 
+            {
+                _logger.LogWarning("Удаление категории отклонено, неверный Id.");
+                return NotFound("Не найдено по Id"); 
+            }
             var category = await _context.Categories.FindAsync(id);
-            if (category == null) { return NotFound("Категория не найдена!"); }
+            if (category == null) 
+            {
+                _logger.LogWarning("Удаление категории отклонено, категория не найдена.");
+                return NotFound("Категория не найдена!"); 
+            }
 
             _context.Categories.Remove(category);
             await _context.SaveChangesAsync();
 
+            _logger.LogInformation("Удаление категории успешно.");
             return Ok("Категория удалена!");
 
 

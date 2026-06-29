@@ -4,16 +4,19 @@ using Microsoft.EntityFrameworkCore;
 using OptPlatform.Domain;
 using OptPlatform.Infrastructure;
 using OptPlatform.Application;
+using Microsoft.Extensions.Logging;
 
 [ApiController]
 [Route("api/[controller]")]
 public class ProductsController : ControllerBase
 {
     private readonly AppDbContext _context;
+    private readonly ILogger<ProductsController> _logger;
 
-    public ProductsController(AppDbContext context)
+    public ProductsController(AppDbContext context, ILogger<ProductsController> logger)
     {
         _context = context;
+        _logger = logger;
     }
 
     //to get all products
@@ -64,17 +67,25 @@ public class ProductsController : ControllerBase
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(int id)
     {
-        if (id <= 0) { return NotFound("Неверный Id!"); }
-        var tovar = await _context.Products.FindAsync(id);
-
-        if (tovar != null)
+        if (id <= 0) 
         {
-            _context.Products.Remove(tovar);
+            _logger.LogWarning("Удаление товара {id} отклонено, неверный Id", id);
+            return NotFound("Неверный Id!"); 
+        }
+
+        var product = await _context.Products.FindAsync(id);
+
+        if (product != null)
+        {
+            _context.Products.Remove(product);
             await _context.SaveChangesAsync();
-            return Ok($"{tovar.Name} успешно удалён!");
+
+            _logger.LogInformation("Удаление товара {id} успешно, {Name} удален", id, product.Name);
+            return Ok($"{product.Name} успешно удалён!");
         }
         else
         {
+            _logger.LogWarning("Товар {id} не найден при попытке удаления", id);
             return BadRequest("Ошибка! Товар не найден!");
         }
     }
@@ -85,10 +96,15 @@ public class ProductsController : ControllerBase
     {
         if (product.Price <= 0)
         {
+            _logger.LogWarning("Создание товара отклонено, неверная цена");
             return BadRequest("Неверная цена!");
         }
 
-        if (product.Name == null) { return BadRequest("Неверное имя!"); }
+        if (product.Name == null) 
+        {
+            _logger.LogWarning("Создание товара отклонено, неверное имя");
+            return BadRequest("Неверное имя!"); 
+        }
 
         _context.Products.Add(product);
         await _context.SaveChangesAsync();
@@ -102,6 +118,8 @@ public class ProductsController : ControllerBase
             Name = product.Name,
             CategoryName = product.Category.Name
         };
+
+        _logger.LogInformation("Товар {Name} (Id: {Id}) создан", product.Name, product.Id);
         return CreatedAtAction(nameof(GetById), new { id = product.Id }, ProductDTO);
 
 
@@ -137,7 +155,11 @@ public class ProductsController : ControllerBase
             .Include(p => p.Category)
             .FirstOrDefaultAsync(p => p.Id == id);
 
-        if (product == null) { return NotFound("Товар не найден!"); }
+        if (product == null) 
+        {
+            _logger.LogWarning("Редактирование товара отклонено, товар не найден");
+            return NotFound("Товар не найден!");
+        }
 
         product.Price = updatedProduct.Price;
         product.Name = updatedProduct.Name;
@@ -152,6 +174,8 @@ public class ProductsController : ControllerBase
             Name = product.Name,
             CategoryName = product.Category.Name
         };
+
+        _logger.LogInformation("Редактирование товара {Id} успешно", productDTO.Id);
         return Ok(productDTO);
 
     }
