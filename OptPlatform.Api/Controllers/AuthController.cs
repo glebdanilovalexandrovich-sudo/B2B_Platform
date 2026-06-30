@@ -24,6 +24,9 @@ namespace firstAPI.Controllers
         private readonly AppDbContext _context;
         private readonly IConfiguration _configuration;
         private readonly ILogger<AuthController> _logger;
+        private AppDbContext object1;
+        private IConfiguration object2;
+
         public AuthController(AppDbContext context, IConfiguration configuration, ILogger<AuthController> logger)
         {
             _context = context;
@@ -31,6 +34,11 @@ namespace firstAPI.Controllers
             _logger = logger;
         }
 
+        public AuthController(AppDbContext object1, IConfiguration object2)
+        {
+            this.object1 = object1;
+            this.object2 = object2;
+        }
 
         [HttpPost("registerAdmin")]
         public async Task<IActionResult> CreateAdmin([FromBody] AdminDTO register) 

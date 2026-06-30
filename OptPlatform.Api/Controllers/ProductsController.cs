@@ -62,7 +62,7 @@ public class ProductsController : ControllerBase
         });
     }
 
-    //удаление
+    //delete
     [Authorize(Roles = "Supplier")]
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(int id)
