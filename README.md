@@ -1,8 +1,14 @@
+![.NET 8](https://img.shields.io/badge/.NET-8.0-purple)
+![Docker](https://img.shields.io/badge/Docker-✔-blue)
+![License](https://img.shields.io/badge/License-MIT-green)
+
 B2B Marketplace API
 
-Backend for a B2B marketplace built with **ASP.NET Core 8**, **Entity Framework Core**, **JWT**, and **SQL Server**.
+B2B Marketplace API — A RESTful backend for managing deals, products, and user roles.
 
-
+Contact: 
+Email - glebdanilovalexandrovich@gmail.com
+Telegram - @Rushpile
 
 Technologies
 
