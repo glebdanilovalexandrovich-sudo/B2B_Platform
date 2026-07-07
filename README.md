@@ -6,7 +6,7 @@ B2B Marketplace API
 
 B2B Marketplace API — A RESTful backend for managing deals, products, and user roles.
 
-Contact: 
+Contact: (I want to get job)
 Email - glebdanilovalexandrovich@gmail.com
 Telegram - @Rushpile
 
